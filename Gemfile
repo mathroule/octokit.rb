@@ -36,15 +36,15 @@ faraday_version = ENV.fetch('FARADAY_VERSION', '~> 2.0')
 
 gem 'faraday', faraday_version
 
-if faraday_version.start_with?("~> 2")
-  gem 'faraday-retry'
+if faraday_version.start_with?('~> 2')
   gem 'faraday-multipart'
+  gem 'faraday-retry'
 end
 
 group :test, :development do
   gem 'pry-byebug'
   gem 'redcarpet'
-  gem 'rubocop'
+  gem 'rubocop', '0.81'
 end
 
 gemspec

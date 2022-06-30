@@ -50,16 +50,26 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
       - name: Setup .netrc
         run: chmod 600 spec/fixtures/.netrc
-      - name: Ruby 2.5 needs a newer RubyGems to support frozen-string-literal
-        if: ${{ matrix.ruby == '2.5' }}
+      - name: Ruby 2.5 and earlier need a newer RubyGems to support frozen-string-literal
+        if: ${{ matrix.ruby == '2.5' || matrix.ruby == '2.4' || matrix.ruby == '2.3'  }}
         run: gem update --system 2.7.11
       - name: Install dependencies
         run: |
           bundle config set path .bundle/gems
           bundle config set without development
           bundle install --jobs 4 --retry 3
-      - name: Test with RSpec
+      - name: Test with RSpec with frozen string literals enabled
         env:
           GITHUB_CI: 1
           RUBYOPT: --enable-frozen-string-literal
         run: bundle exec rspec -w
+        if: ${{ matrix.ruby != '2.3' }}
+      - name: Test with RSpec without frozen string literals enabled
+        env:
+          GITHUB_CI: 1
+        run: bundle exec rspec -w
+        if: ${{ matrix.ruby == '2.3' }}
+      - name: Lint with Rubocop
+        env:
+          GITHUB_CI: 1
+        run: bundle exec rubocop
